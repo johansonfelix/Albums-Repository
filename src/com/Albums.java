@@ -1,13 +1,14 @@
 package com;
 
 
+import DAO.DatabaseManager;
 import exceptions.RepException;
 import pojo.Album;
 import pojo.LogEntry;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Base64;
-import DAO.DatabaseManager;
 
 public class Albums implements Serializable {
 
@@ -16,7 +17,7 @@ public class Albums implements Serializable {
     private static Albums albumsInstance = new Albums();
 
     private Albums(){
-        System.out.println("Hello I am a string part of Singleton class");
+
         db = DatabaseManager.getInstance();
     }
 
@@ -26,15 +27,23 @@ public class Albums implements Serializable {
     }
 
 
-    public String createAlbum(Album album){
+    public String createAlbum(Album album) throws RepException {
 
-        try {
+
 
 
             if (db.getAlbum(album.getISRC()) == null) {
+
                 String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
-                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
+                String [] values;
+                if(album.getCover_img()==null)
+                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
+
+                else
+                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
+
                 db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "Albums", colnames, values);
+
 
                 LogEntry newEntry = new LogEntry();
                 newEntry.setISRC(album.getISRC());
@@ -50,11 +59,9 @@ public class Albums implements Serializable {
             } else
                 throw new RepException("Album cannot be created - album already exists!");
 
-        }
-        catch(RepException e){
-            System.out.println(e.getMessage());
-            return e.getMessage();
-        }
+
+
+
     }
 
     public String updateAlbum(Album album){
@@ -132,7 +139,7 @@ public class Albums implements Serializable {
 
         }
         catch(RepException e){
-            
+
             System.out.println(e.getMessage());
         }
         return null;
