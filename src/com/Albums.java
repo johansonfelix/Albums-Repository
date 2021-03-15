@@ -1,14 +1,13 @@
 package com;
 
-import DAO.DatabaseManager;
+
 import exceptions.RepException;
 import pojo.Album;
 import pojo.LogEntry;
 import java.io.Serializable;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Base64;
+import DAO.DatabaseManager;
 
 public class Albums implements Serializable {
 
