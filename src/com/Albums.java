@@ -11,10 +11,19 @@ import DAO.DatabaseManager;
 
 public class Albums implements Serializable {
 
-    DatabaseManager db = DatabaseManager.getInstance();
+    private DatabaseManager db;
 
-    public Albums(){}
+    private static Albums albumsInstance = new Albums();
 
+    private Albums(){
+        System.out.println("Hello I am a string part of Singleton class");
+        db = DatabaseManager.getInstance();
+    }
+
+
+    public static Albums getAlbumsInstance(){
+        return albumsInstance;
+    }
 
 
     public String createAlbum(Album album){
@@ -50,6 +59,7 @@ public class Albums implements Serializable {
 
     public String updateAlbum(Album album){
         try {
+
             if (db.getAlbum(album.getISRC()) != null) {
                 String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
                 String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
@@ -106,7 +116,7 @@ public class Albums implements Serializable {
         }
     }
 
-    public Album getAlbumInfo(String ISRC) throws RepException {
+    public Album getAlbumInfo(String ISRC) {
 
         try {
 
@@ -122,6 +132,7 @@ public class Albums implements Serializable {
 
         }
         catch(RepException e){
+            
             System.out.println(e.getMessage());
         }
         return null;
