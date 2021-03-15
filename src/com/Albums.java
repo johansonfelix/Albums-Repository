@@ -11,7 +11,6 @@ import java.util.ArrayList;
 public class Albums implements Serializable {
 
     DatabaseManager db = DatabaseManager.getInstance();
-    static int id = 10000;
 
     public Albums(){}
 
@@ -24,7 +23,7 @@ public class Albums implements Serializable {
                 db.insertAlbum(album);
 
                 LogEntry newEntry = new LogEntry();
-                newEntry.setId(id++);
+
                 newEntry.setISRC(album.getISRC());
                 newEntry.setT(LogEntry.stringToTypeOfChange("CREATE"));
                 newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
@@ -44,7 +43,7 @@ public class Albums implements Serializable {
                 db.updateAlbum(album);
 
                 LogEntry newEntry = new LogEntry();
-                newEntry.setId(id++);
+
                 newEntry.setISRC(album.getISRC());
                 newEntry.setT(LogEntry.stringToTypeOfChange("UPDATE"));
                 newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
@@ -65,7 +64,7 @@ public class Albums implements Serializable {
                 db.deleteAlbum(ISRC);
 
                 LogEntry newEntry = new LogEntry();
-                newEntry.setId(id++);
+
                 newEntry.setISRC(ISRC);
                 newEntry.setT(LogEntry.stringToTypeOfChange("DELETE"));
                 newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
