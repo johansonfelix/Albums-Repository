@@ -5,8 +5,10 @@ import exceptions.RepException;
 import pojo.Album;
 import pojo.LogEntry;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class Albums implements Serializable {
 
@@ -14,61 +16,85 @@ public class Albums implements Serializable {
 
     public Albums(){}
 
-    public void createAlbum(Album album) throws RepException {
+
+
+    public String createAlbum(Album album){
 
         try {
 
 
             if (db.getAlbum(album.getISRC()) == null) {
-                db.insertAlbum(album);
+                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "Albums", colnames, values);
 
                 LogEntry newEntry = new LogEntry();
-
                 newEntry.setISRC(album.getISRC());
                 newEntry.setT(LogEntry.stringToTypeOfChange("CREATE"));
-                newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
-                db.insertLogEntry(newEntry);
+
+                colnames = new String[]{"Type_Of_Change", "ISRC"};
+                values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
+
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+
+                System.out.println("ALBUM "+album.getISRC()+" CREATED");
+                return "ALBUM "+album.getISRC()+" CREATED";
             } else
                 throw new RepException("Album cannot be created - album already exists!");
 
         }
         catch(RepException e){
             System.out.println(e.getMessage());
+            return e.getMessage();
         }
     }
 
-    public void updateAlbum(Album album) throws RepException {
+    public String updateAlbum(Album album){
         try {
             if (db.getAlbum(album.getISRC()) != null) {
-                db.updateAlbum(album);
+                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
+                db.insertOrUpdate(DatabaseManager.OperationType.UPDATE, "Albums", colnames, values);
 
                 LogEntry newEntry = new LogEntry();
-
                 newEntry.setISRC(album.getISRC());
                 newEntry.setT(LogEntry.stringToTypeOfChange("UPDATE"));
-                newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
-                db.insertLogEntry(newEntry);
+
+                colnames = new String[]{"Type_Of_Change", "ISRC"};
+                values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
+
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+
+                System.out.println("ALBUM "+album.getISRC()+" UPDATED");
+                return "ALBUM "+album.getISRC()+" UPDATED";
             } else
                 throw new RepException("Album cannot be updated - album does not exist!");
 
         }
         catch(RepException e){
             System.out.println(e.getMessage());
+            return e.getMessage();
         }
     }
 
-    public void deleteAlbum(String ISRC) throws RepException {
+    public String deleteAlbum(String ISRC) throws RepException {
 
         try{
             if(db.getAlbum(ISRC) != null){
-                db.deleteAlbum(ISRC);
+                db.delete("Albums","ISRC", ISRC);
 
                 LogEntry newEntry = new LogEntry();
-
                 newEntry.setISRC(ISRC);
                 newEntry.setT(LogEntry.stringToTypeOfChange("DELETE"));
-                newEntry.setTimestamp(new Timestamp(System.currentTimeMillis()));
-                db.insertLogEntry(newEntry);
+
+                String [] colnames = new String[]{"Type_Of_Change", "ISRC"};
+                String [] values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
+
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+
+                System.out.println("ALBUM "+ISRC+" DELETED");
+                return "ALBUM "+ISRC+" DELETED";
+
             }
 
             else
@@ -77,6 +103,7 @@ public class Albums implements Serializable {
 
         catch(RepException e){
             System.out.println(e.getMessage());
+            return e.getMessage();
         }
     }
 
@@ -87,6 +114,7 @@ public class Albums implements Serializable {
             if (db.getAlbum(ISRC) != null) {
                 Album album = db.getAlbum(ISRC);
 
+                System.out.println("ALBUM "+ISRC+" RETURNED.");
                 return album;
 
             }
