@@ -4,6 +4,7 @@ package com;
 import DAO.DatabaseManager;
 import exceptions.RepException;
 import pojo.Album;
+import pojo.CoverImage;
 import pojo.LogEntry;
 
 import java.io.Serializable;
@@ -15,7 +16,7 @@ public class Albums implements Serializable {
     private DatabaseManager db;
 
     private static Albums albumsInstance = new Albums();
-    String [] albumColNames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+    String [] albumColNames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image", "MIME"};
     String [] logColNames = {"Type_Of_Change", "ISRC"};
 
     private Albums(){
@@ -35,13 +36,8 @@ public class Albums implements Serializable {
             if (db.getAlbum(album.getISRC()) == null) {
 
 
-                String [] values;
-                if(album.getCover_img()==null)
-                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
-
-                else
-                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
-
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), album.getCoverImage().getBase64atatchment(), album.getCoverImage().getMimeType()};
+                System.out.println("here");
                 db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "Albums", albumColNames, values);
 
 
@@ -66,12 +62,8 @@ public class Albums implements Serializable {
 
             if (db.getAlbum(album.getISRC()) != null) {
 
-                String [] values;
-                if(album.getCover_img()==null)
-                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), album.getCoverImage().getBase64atatchment(), album.getCoverImage().getMimeType()};
 
-                else
-                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
 
                 db.insertOrUpdate(DatabaseManager.OperationType.UPDATE, "Albums", albumColNames, values);
 
@@ -158,7 +150,7 @@ public class Albums implements Serializable {
             Album album = db.getAlbum(ISRC);
 
             if(album != null){
-                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image", "MIME"};
                 String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(bytes)};
                 update(album, colnames, values);
                 System.out.println("ALBUM COVER FOR "+ISRC+" WAS UPDATED");
@@ -214,9 +206,9 @@ public class Albums implements Serializable {
         }
 
     }
-/*    public byte[] getAlbumCoverImage(String ISRC){
-        return albums.getCoverImage();
-    }*/
+    public CoverImage getAlbumCoverImage(String ISRC){
+        return db.getAlbumCoverImage(ISRC);
+    }
 
     public ArrayList<LogEntry> getLogs(){
         return db.getAllLogEntries();
