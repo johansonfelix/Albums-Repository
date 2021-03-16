@@ -63,9 +63,9 @@ public class Albums implements Serializable {
 
     public String updateAlbum(Album album){
         try {
-            System.out.println("here 1");
+
             if (db.getAlbum(album.getISRC()) != null) {
-                System.out.println("here 2");
+
                 String [] values;
                 if(album.getCover_img()==null)
                     values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
@@ -106,10 +106,10 @@ public class Albums implements Serializable {
                 newEntry.setISRC(ISRC);
                 newEntry.setT(LogEntry.stringToTypeOfChange("DELETE"));
 
-                String [] colnames = new String[]{"Type_Of_Change", "ISRC"};
+
                 String [] values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
 
-                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", logColNames, values);
 
                 System.out.println("ALBUM "+ISRC+" DELETED");
                 return "ALBUM "+ISRC+" DELETED";
