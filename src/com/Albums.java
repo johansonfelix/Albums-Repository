@@ -70,16 +70,7 @@ public class Albums implements Serializable {
             if (db.getAlbum(album.getISRC()) != null) {
                 String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
                 String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
-                db.insertOrUpdate(DatabaseManager.OperationType.UPDATE, "Albums", colnames, values);
-
-                LogEntry newEntry = new LogEntry();
-                newEntry.setISRC(album.getISRC());
-                newEntry.setT(LogEntry.stringToTypeOfChange("UPDATE"));
-
-                colnames = new String[]{"Type_Of_Change", "ISRC"};
-                values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
-
-                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+                update(album, colnames, values);
 
                 System.out.println("ALBUM "+album.getISRC()+" UPDATED");
                 return "ALBUM "+album.getISRC()+" UPDATED";
@@ -149,9 +140,71 @@ public class Albums implements Serializable {
         return db.getAllAlbums();
     }
 
-    public void updateAlbumCoverImage(){}
-    public void deleteAlbumCoverImage(){}
-    public void getAlbumCoverImage(){}
+    public String updateAlbumCoverImage(String ISRC, byte[] bytes){
+        try{
+
+            Album album = db.getAlbum(ISRC);
+
+            if(album != null){
+                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(bytes)};
+                update(album, colnames, values);
+                System.out.println("ALBUM COVER FOR "+ISRC+" WAS UPDATED");
+                return "ALBUM COVER IMAGE FOR "+ISRC+" WAS UPDATED";
+            }
+            else{
+                throw new RepException("Album does not exist - cannot update cover image.");
+            }
+        }
+
+        catch (RepException e){
+
+            return e.getMessage();
+        }
+
+    }
+
+
+
+    private void update(Album album, String[] colnames, String[] values) {
+        db.insertOrUpdate(DatabaseManager.OperationType.UPDATE, "Albums", colnames, values);
+
+        LogEntry newEntry = new LogEntry();
+        newEntry.setISRC(album.getISRC());
+        newEntry.setT(LogEntry.stringToTypeOfChange("UPDATE"));
+
+        colnames = new String[]{"Type_Of_Change", "ISRC"};
+        values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
+
+        db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+    }
+
+    public String deleteAlbumCoverImage(String ISRC){
+        try{
+
+            Album album = db.getAlbum(ISRC);
+
+            if(album != null){
+                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
+                update(album, colnames, values);
+                System.out.println("ALBUM COVER FOR "+ISRC+" WAS DELETED");
+                return "ALBUM COVER IMAGE FOR "+ISRC+" WAS DELETED";
+            }
+            else{
+                throw new RepException("Album does not exist - cannot delete cover image.");
+            }
+        }
+
+        catch (RepException e){
+
+            return e.getMessage();
+        }
+
+    }
+/*    public byte[] getAlbumCoverImage(String ISRC){
+        return albums.getCoverImage();
+    }*/
 
     public ArrayList<LogEntry> getLogs(){
         return db.getAllLogEntries();

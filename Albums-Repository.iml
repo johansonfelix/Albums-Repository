@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Albums-Core" />
     <orderEntry type="module" module-name="Albums-Persistence" />
+    <orderEntry type="module" module-name="Albums-Core" />
   </component>
 </module>
