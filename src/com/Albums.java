@@ -15,6 +15,8 @@ public class Albums implements Serializable {
     private DatabaseManager db;
 
     private static Albums albumsInstance = new Albums();
+    String [] albumColNames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+    String [] logColNames = {"Type_Of_Change", "ISRC"};
 
     private Albums(){
 
@@ -30,11 +32,9 @@ public class Albums implements Serializable {
     public String createAlbum(Album album) throws RepException {
 
 
-
-
             if (db.getAlbum(album.getISRC()) == null) {
 
-                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
+
                 String [] values;
                 if(album.getCover_img()==null)
                     values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
@@ -42,35 +42,47 @@ public class Albums implements Serializable {
                 else
                     values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
 
-                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "Albums", colnames, values);
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "Albums", albumColNames, values);
 
 
                 LogEntry newEntry = new LogEntry();
                 newEntry.setISRC(album.getISRC());
                 newEntry.setT(LogEntry.stringToTypeOfChange("CREATE"));
 
-                colnames = new String[]{"Type_Of_Change", "ISRC"};
+
                 values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
 
-                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", colnames, values);
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", logColNames, values);
 
                 System.out.println("ALBUM "+album.getISRC()+" CREATED");
                 return "ALBUM "+album.getISRC()+" CREATED";
             } else
                 throw new RepException("Album cannot be created - album already exists!");
 
-
-
-
     }
 
     public String updateAlbum(Album album){
         try {
-
+            System.out.println("here 1");
             if (db.getAlbum(album.getISRC()) != null) {
-                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
-                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
-                update(album, colnames, values);
+                System.out.println("here 2");
+                String [] values;
+                if(album.getCover_img()==null)
+                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
+
+                else
+                    values = new String[]{album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(album.getCover_img())};
+
+                db.insertOrUpdate(DatabaseManager.OperationType.UPDATE, "Albums", albumColNames, values);
+
+                LogEntry newEntry = new LogEntry();
+                newEntry.setISRC(album.getISRC());
+                newEntry.setT(LogEntry.stringToTypeOfChange("UPDATE"));
+
+
+                values = new String[]{String.valueOf(newEntry.getT()), newEntry.getISRC()};
+
+                db.insertOrUpdate(DatabaseManager.OperationType.INSERT, "LogEntries", logColNames, values);
 
                 System.out.println("ALBUM "+album.getISRC()+" UPDATED");
                 return "ALBUM "+album.getISRC()+" UPDATED";
