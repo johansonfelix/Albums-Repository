@@ -8,7 +8,7 @@ import pojo.LogEntry;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Base64;
+
 
 public class Albums implements Serializable {
 
