@@ -144,15 +144,15 @@ public class Albums implements Serializable {
         return db.getAllAlbums();
     }
 
-    public String updateAlbumCoverImage(String ISRC, byte[] bytes){
+    public String updateAlbumCoverImage(String ISRC, CoverImage image){
         try{
 
             Album album = db.getAlbum(ISRC);
 
             if(album != null){
-                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image", "MIME"};
-                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), Base64.getEncoder().encodeToString(bytes)};
-                update(album, colnames, values);
+
+                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), image.getBase64atatchment(), image.getMimeType()};
+                update(album, albumColNames, values);
                 System.out.println("ALBUM COVER FOR "+ISRC+" WAS UPDATED");
                 return "ALBUM COVER IMAGE FOR "+ISRC+" WAS UPDATED";
             }
