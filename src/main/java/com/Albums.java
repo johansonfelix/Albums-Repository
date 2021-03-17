@@ -1,6 +1,5 @@
 package com;
 
-
 import DAO.DatabaseManager;
 import exceptions.RepException;
 import pojo.Album;
