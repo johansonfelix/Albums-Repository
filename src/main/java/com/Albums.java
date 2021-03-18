@@ -149,9 +149,10 @@ public class Albums implements Serializable {
             Album album = db.getAlbum(ISRC);
 
             if(album != null){
-
-                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), image.getBase64atatchment(), image.getMimeType()};
-                update(album, albumColNames, values);
+                System.out.println("Trying to update album cover image to: " + image.toString());
+                String [] cols = {"ISRC", "Cover_Image", "MIME"};
+                String [] values = {ISRC, image.getBase64atatchment(), image.getMimeType()};
+                update(album, cols, values);
                 System.out.println("ALBUM COVER FOR "+ISRC+" WAS UPDATED");
                 return "ALBUM COVER IMAGE FOR "+ISRC+" WAS UPDATED";
             }
