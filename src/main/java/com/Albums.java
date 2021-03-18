@@ -213,15 +213,16 @@ public class Albums implements Serializable {
         return db.getAllLogEntries();
     }
 
-    public String clearLogs(){
+    public void clearLogs(){
 
         try{
             throw new RepException("This method is not yet supported");
         }
         catch(RepException e){
-            return e.getMessage();
+            System.out.println(e.getMessage());
         }
     }
+
 
 
 }
