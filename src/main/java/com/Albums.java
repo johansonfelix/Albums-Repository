@@ -189,8 +189,8 @@ public class Albums implements Serializable {
             Album album = db.getAlbum(ISRC);
 
             if(album != null){
-                String [] colnames = {"ISRC", "Title", "Description", "Release_Year", "Artist_First_Name", "Artist_Last_Name", "Cover_Image"};
-                String [] values = {album.getISRC(), album.getTitle(), album.getDescription(), album.getReleaseYear(), album.getArtistFirstName(), album.getArtistLastName(), "NO IMAGE"};
+                String [] colnames = {"ISRC", "Cover_Image", "MIME"};
+                String [] values = {ISRC, null,null};
                 update(album, colnames, values);
                 System.out.println("ALBUM COVER FOR "+ISRC+" WAS DELETED");
                 return "ALBUM COVER IMAGE FOR "+ISRC+" WAS DELETED";
